@@ -1,0 +1,26 @@
+{
+  "name": "powerspike_differences",
+  "version": "1.0.0",
+  "description": "Shows the differences in champion kills and win ratios by item changes PowerSpike isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "League",
+    "of",
+    "Legends",
+    "Riot",
+    "Games",
+    "API"
+  ],
+  "author": "Jason Carter",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^1.4.2",
+    "body-parser": "^1.13.3",
+    "express": "^4.13.1",
+    "mongodb": "^2.0.41",
+    "request": "^2.60.0"
+  }
+}

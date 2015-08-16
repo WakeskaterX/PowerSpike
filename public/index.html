@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>League of Legends - Power Spike</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <script src="/js/charts.min.js"></script>
+  <script src="/js/chart_handler.js"></script>
+</head>
+<body>
+  <h1 class="text-center">League of Legends - PowerSpike</h1>
+  <div class="container">
+    <div id="search-bar" class="input-group col-md-8 col-xs-12 col-md-offset-2">
+      <input id="search" type="text" class="search-query form-control" placeholder="Enter a Champion Name" />
+      <span class="input-group-btn">
+        <button id ="search-button" class="btn btn-info" type="submit" onclick="submitRequest();">
+            <span class=" glyphicon glyphicon-search"></span>
+        </button>
+      </span>
+    </div>
+    <div class="col-md-8 col-md-offset-2 col-xs-12">
+      <span id="champ_name"></span>
+      <canvas id="champion_results" width="800" height="400"></canvas>
+      <div id="chart_legend"></div>
+    </div>
+  </div>
+  <script>
+    function submitRequest() {
+      var champ_name = $("#search-bar input").val();
+      $("#search-bar input").val("");
+      $.ajax({
+        url: "/champion/"+champ_name,
+        success: function(data, status, xhr) {
+          console.log(data);
+          drawChart(JSON.parse(data));
+        }
+      })
+      
+      return false;
+    }
+    
+    $(document).ready(function() {
+      $("#search").keyup(function(event){
+        if(event.keyCode == 13){
+          $("#search-button").click();
+        }
+      });
+    });
+  </script>
+  <footer>PowerSpike isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.</footer>
+</body>
+</html>

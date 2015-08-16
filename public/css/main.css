@@ -1,0 +1,38 @@
+footer {
+  position: relative;
+  bottom: 0;
+  margin-top: 10em;
+  padding: 2em;
+  color: #555;
+}
+
+input {
+    margin:0;
+    padding: 0;
+}
+
+span#champ_name {
+  display: inline-block;
+  width: 100%;
+  margin: auto;
+  font-size: 2em;
+  text-align: center;
+}
+
+#search-bar {
+  margin-top: 2em;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.line-legend span {
+  display: inline-block;
+  width: 20px;
+  height: .8em;
+  padding:.1em;
+  border: 1px solid black;
+  border-radius: 2px;
+  margin-right: 1em;
+}
