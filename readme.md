@@ -22,7 +22,3 @@ You will need to have a local instance of mongodb running to both save the data 
 You can view hosted version at:
 
 http://www.powerspike.xyz/
-
-or (if the DNS hasn't resolved yet) at:
-
-http://104.131.183.238/
