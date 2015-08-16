@@ -16,3 +16,13 @@ node server.js will start the web server.
 You can then access the page at localhost:3000/index.html and start searching!
 
 You will need to have a local instance of mongodb running to both save the data and retrieve it.
+
+
+### Visit the hosted version!
+You can view hosted version at:
+
+http://www.powerspike.xyz/
+
+or (if the DNS hasn't resolved yet) at:
+
+http://104.131.183.238/
