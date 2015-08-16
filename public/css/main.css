@@ -19,6 +19,14 @@ span#champ_name {
   text-align: center;
 }
 
+#chart_title {
+  display: block;
+  width: 100%;
+  margin: auto;
+  font-size: 1.4em;
+  text-align: center;
+}
+
 #search-bar {
   margin-top: 2em;
 }
