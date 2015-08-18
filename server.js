@@ -28,10 +28,11 @@ app.get('/champion/:name', function(req, res) {
     "patch_511_normal": function(cb) {
       mongo_db.collection("patch_5_11").findOne({"name": name_regex}, function(err, doc) {
         if (!err && doc) {
+          //If we haven't set the name, title and ID for this champ yet, set it now
           if (results_object.name === "") results_object.name = doc.name;
           if (results_object.title === "") results_object.title = doc.title;
           if (results_object.id === 0) results_object.id = doc.champ_id;
-          cb(null, doc.kills);
+          cb(null, {kills: doc.kills, games_played: doc.games_played});
         } else {
           cb(null, {});
         }
@@ -43,7 +44,7 @@ app.get('/champion/:name', function(req, res) {
           if (results_object.name === "") results_object.name = doc.name;
           if (results_object.title === "") results_object.title = doc.title;
           if (results_object.id === 0) results_object.id = doc.champ_id;
-          cb(null, doc.kills);
+          cb(null, {kills: doc.kills, games_played: doc.games_played});
         } else {
           cb(null, {});
         }
@@ -55,7 +56,7 @@ app.get('/champion/:name', function(req, res) {
           if (results_object.name === "") results_object.name = doc.name;
           if (results_object.title === "") results_object.title = doc.title;
           if (results_object.id === 0) results_object.id = doc.champ_id;
-          cb(null, doc.kills);
+          cb(null, {kills: doc.kills, games_played: doc.games_played});
         } else {
           cb(null, {});
         }
@@ -67,7 +68,7 @@ app.get('/champion/:name', function(req, res) {
           if (results_object.name === "") results_object.name = doc.name;
           if (results_object.title === "") results_object.title = doc.title;
           if (results_object.id === 0) results_object.id = doc.champ_id;
-          cb(null, doc.kills);
+          cb(null, {kills: doc.kills, games_played: doc.games_played});
         } else {
           cb(null, {});
         }

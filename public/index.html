@@ -22,7 +22,7 @@
     </div>
     <div class="col-md-8 col-md-offset-2 col-xs-12">
       <span id="champ_name"></span><br>
-      <span id="chart_title">Kills over the course of a Game: Per Minute</span>
+      <span id="chart_title">Average Kills in each minute over the course of a Game</span>
       <canvas id="champion_results" width="800" height="400"></canvas>
       <div id="chart_legend"></div>
     </div>
@@ -35,7 +35,7 @@
         url: "/champion/"+champ_name,
         success: function(data, status, xhr) {
           console.log(data);
-          drawChart(JSON.parse(data));
+          DRAW_LIB.drawChart(JSON.parse(data));
         }
       })
       

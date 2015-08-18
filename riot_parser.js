@@ -4,7 +4,7 @@ var fs = require('fs');
 var async = require('async');
 var mongo_url = "mongodb://localhost:27017/champion_data";
 var riot_api_base = "https://na.api.pvp.net"
-var riot_api_key = "API_KEY_HERE";
+var riot_api_key = "5c444333-299b-4876-bcce-d2ddeeb5e5bc";
 
 var riot_data_511_normal = require('./app/riot_match_data/5.11/NORMAL_5X5/NA.json');
 var riot_data_514_normal = require('./app/riot_match_data/5.14/NORMAL_5X5/NA.json');
@@ -43,13 +43,19 @@ var process_data = [
   }
 ]
 
+var current_dataset = 0;
+var processing = false;
+
+//Processing Queue
+var to_process = [];
+
 var rate_limit_wait = 25000;
 /** The goal of this script is to make requests to the riot API in a timely manner and
  *  save the relevant data to a postgres database.
  */
 
 function _init(callback){
-  console.log(matched_ids);
+  processing = true;
   MongoClient.connect(mongo_url, function(err, db) {
     if (err) console.log(err);
     mongo_db = db;
@@ -88,6 +94,7 @@ function getMatchData(match_id, collection, main_callback) {
       } else {
         console.log("The match id: "+match_id+" wasn't found!  Skipping!");
         main_callback();
+        return;
       }
     }
     console.log("Recieved Data from RIOT API");
@@ -95,9 +102,11 @@ function getMatchData(match_id, collection, main_callback) {
     
     //First get our player_mapping so we can attribute kills to specific champions
     var player_map = {}; // {participantId: championId}
+    var champion_ids = [];
     for (var i = 0; i < participants.length; i++) {
       var p = participants[i];
       player_map[p.participantId.toString()] = p.championId.toString();
+      champion_ids.push(p.championId.toString());
     }
   
     //Next iterate through all of our events frames and get all our champion kill events
@@ -133,7 +142,7 @@ function getMatchData(match_id, collection, main_callback) {
         main_callback();
       } else {
         console.log("Saving to MongoDB");
-        saveToDatabase(kills, collection, main_callback);
+        saveToDatabase(champion_ids, kills, collection, main_callback);
       }
     });
   });
@@ -174,55 +183,83 @@ function convertTimestamp (timestamp) {
   return Math.floor(timestamp/60000);  //Return the Minute on which teh kill happened
 }
 
-function saveToDatabase (kills, col, callback) {
+function saveToDatabase (champion_ids, kills, col, main_callback) {
   if (mongo_db) {
-    async.each(kills, function(ke, callback) {
-      //Update the kill event in mongodb
-      var filter = {champ_id: ke.champ_id};
-      var increment_action = {};
-      increment_action["kills."+ke.timestamp] = 1;
-      var update = { $set: { name: ke.champ_name, title: ke.champ_title}, $inc: increment_action };
-      var options = {upsert: true};
-      mongo_db.collection(col).updateOne(filter, update, options, function(err, res) {
-        callback(err);
-      });
-    }, function(err){
-      if (err) console.error(err);
-      else console.log("Updated Kills in mongo db!");
-      callback(err);
+    async.parallel([
+      function(callback) {
+        async.each(kills, function(ke, cb) {
+          //Update the kill event in mongodb
+          var filter = {champ_id: ke.champ_id};
+          var increment_action = {};
+          increment_action["kills."+ke.timestamp] = 1;
+          var update = { $set: { name: ke.champ_name, title: ke.champ_title }, $inc: increment_action };
+          var options = { upsert: true };
+          mongo_db.collection(col).updateOne(filter, update, options, cb);
+        }, function (err) {
+          if (err) console.error(err);
+          else console.log("Updated Kills in mongo db!");
+          callback(err);
+        });
+      },
+      function (callback) {
+        async.each(champion_ids, function (champ, cb) {
+          var filter = { champ_id: champ };
+          var increment_action = { games_played: 1 };
+          var update = { $inc: increment_action };
+          var options = { upsert: true };
+          mongo_db.collection(col).updateOne(filter, update, options, cb);
+        }, function(err) {
+          if (err) console.error(err);
+          else console.log("Updated Games Played in mongo db!");
+          callback(err);
+        })
+      }
+    ], function(err) {
+      if (err) {
+        console.error("Error saving to Mongo!"+err);
+      }
+      main_callback(err);
     });
   } else {
     console.log("ERROR: Mongo is not instantiated yet!");
-    callback();
+    main_callback();
   }
 }
 
 function runProcess() {
   _init(function(err) {
-    async.eachSeries(process_data, function(process_data, process_callback) {
-      console.log("Getting All Match Data for Riot Data: "+process_data.name);
-      async.eachSeries(process_data.data, function(match_id, callback) {
-        if (matched_ids.indexOf(match_id) == -1) {
-          getMatchData(match_id, process_data.collection, function(err){
-            //Now that it was a success save our match_id to the array and write it to a file
-            save_matched_ids(match_id, function(err) {
-              console.log("Finished getting data for match id: "+match_id+", waiting "+rate_limit_wait+" ms for the next query to RIOT API");
-              setTimeout(function() {
-                callback();
-              },rate_limit_wait);
-            });
-          });
-        } else {
-          console.log("Already Parsed Match Id: "+match_id+", skipping!");
-          callback();
-        }
-      }, function(err) {
-        if (err) console.error(err);
-      });
-    }, function(err) {
-      if (err) console.error(err);
-      console.log("FINISHED PROCESSING, shutting down...");
-      _close();
+    fillQueue();
+    console.log("Enqueued items!  "+to_process.length+" items left to process!");
+    processMatch(to_process.shift());
+  })
+}
+
+function fillQueue() {
+  //Iterate through our 4 data types and fill our queue with the data we need
+  for (var i = 0; i < 4; i++) {
+    for (var j = 0; j < process_data[i].data.length; j++) {
+      var match = process_data[i].data[j];
+      //If we have have not parsed this match already, add it to the queue
+      if (matched_ids.indexOf(match) === -1) {
+        to_process.push({"match": match, "collection": process_data[i].collection});
+      }
+    }
+  }
+}
+
+function processMatch(match_item) {
+  console.log("Processing Match ID: "+match_item.match+" on collection "+match_item.collection);
+  getMatchData(match_item.match, match_item.collection, function(err){
+    //Now that it was a success save our match_id to the array and write it to a file
+    save_matched_ids(match_item.match, function(err) {
+      console.log("Finished getting data for match id: "+match_item.match+", waiting "+rate_limit_wait+" ms for the next query to RIOT API");
+      if (to_process.length > 0) {
+        setTimeout(function() {
+          processMatch(to_process.shift());
+        },rate_limit_wait);
+      } else {
+        cleanUp();
+      }
     });
   });
 }
@@ -235,5 +272,10 @@ function save_matched_ids(match_id, callback) {
   })
 }
 
+function cleanUp() {
+  console.log("Finished Processing!  Closing MongoDB Collection");
+  _close();
+}
+
+//Start up our process!
 runProcess();
-//getChampInfo(245);
