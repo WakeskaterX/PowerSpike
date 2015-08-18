@@ -4,6 +4,13 @@ PowerSpike shows data on the aggregate times champions got kills throughout a ma
 By looking at this data across many champions we can see when champions hit their
 power spikes.
 
+#### Prerequisites:
+
+* Install NodeJS
+* Install MongoDB (Required to store the data and retrieve it)
+* Install NPM
+* Download the application and run: npm install
+
 To run the application:
 
 **Start the Parser to begin data collection:**
@@ -16,9 +23,6 @@ To run the application:
 
 
 You can then access the page at localhost:3000/index.html and start searching!
-
-You will need to have a local instance of mongodb running to both save the data and retrieve it.
-
 
 ### Visit the hosted version!
 You can view hosted version at:
