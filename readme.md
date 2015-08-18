@@ -4,13 +4,15 @@ PowerSpike shows data on the aggregate times champions got kills throughout a ma
 By looking at this data across many champions we can see when champions hit their
 power spikes.
 
-To run the application, first start up the parser in a background process.
+To run the application:
 
-node riot_parser.js will run the parser.
+**Start the Parser to begin data collection:**
 
-Next you will want to start the web server.
+    node riot_parser.js   //will run the parser.
 
-node server.js will start the web server.
+**Start the Web Server:**
+
+    node server.js  //will start the web server.
 
 
 You can then access the page at localhost:3000/index.html and start searching!

@@ -4,7 +4,7 @@ var fs = require('fs');
 var async = require('async');
 var mongo_url = "mongodb://localhost:27017/champion_data";
 var riot_api_base = "https://na.api.pvp.net"
-var riot_api_key = "5c444333-299b-4876-bcce-d2ddeeb5e5bc";
+var riot_api_key = "API_KEY_HERE";
 
 var riot_data_511_normal = require('./app/riot_match_data/5.11/NORMAL_5X5/NA.json');
 var riot_data_514_normal = require('./app/riot_match_data/5.14/NORMAL_5X5/NA.json');
