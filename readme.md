@@ -1,8 +1,13 @@
 # PowerSpike - League of Legends Champion Kill Times
 
 PowerSpike shows data on the aggregate times champions got kills throughout a match.
-By looking at this data across many champions we can see when champions hit their
-power spikes.
+By looking at this data across many champions we can see when champions hit their powerspikes relative
+to other champions in LoL and relative to patch sets and items.
+
+Here we can see ranked and normal statistics for before and after the item update to see if that changed the overall game
+of when champions were getting certain kills.
+
+For this test we're just looking at kill data before and after, ignoring whether or not they bought the changed items.
 
 #### Prerequisites:
 
