@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>League of Legends - Power Spike</title>
+  <!-- Add in BootStrap, JQuery, our Main.CSS and Charts.js and our Chart Handler Script -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/main.css">
@@ -28,6 +29,7 @@
     </div>
   </div>
   <script>
+    //Submits the request to the server and then draws the chart with the data
     function submitRequest() {
       var champ_name = $("#search-bar input").val();
       $("#search-bar input").val("");
@@ -41,7 +43,8 @@
       
       return false;
     }
-    
+
+    //This just lets us use enter to search instead of clicking a button
     $(document).ready(function() {
       $("#search").keyup(function(event){
         if(event.keyCode == 13){

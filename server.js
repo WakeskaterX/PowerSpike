@@ -1,5 +1,5 @@
 /**
- * Article Server - stands up an HTTP server for local requests that allows our Curator to post 
+ * Web Server - Supplies static data and lets us access Mongo Objects
  */
 var express = require('express');
 var http = require('http');
@@ -14,16 +14,22 @@ var mongo_db;
 
 app.use(bodyParser.json());
 
+//When we get a champion name request we'll access MongoDB and return the data we need
 app.get('/champion/:name', function(req, res) {
   console.log("Recieved Champion Data Request for champion: "+req.params.name);
   var champ_name = req.params.name;
+  //The Results Object stores the data to return
   var results_object = {
     name: "",
     title: "",
     id: 0,
     kill_data: {}
   };
+  //Case insensitive Regex so we can get better match results
   var name_regex = new RegExp(champ_name, "i");
+  //In Parallel, we're going to query mongodb in all 4 collections for our champion name
+  //When we find that champion, check if this is the first one we found and update the results_object
+  //Then once all 4 parallel processes complete, we'll have our games_played and kills object on paired ot each key name
   async.parallel({
     "patch_511_normal": function(cb) {
       mongo_db.collection("patch_5_11").findOne({"name": name_regex}, function(err, doc) {
@@ -77,16 +83,20 @@ app.get('/champion/:name', function(req, res) {
   }, function(err, results) {
     if (err) console.error(err);
     results_object.kill_data = results;
+    //Finally Stringify the data and return
     res.send(JSON.stringify(results_object));
   });
 });
 
+//Redirect to our index.html at the root
 app.get('/', function(req, res) {
   res.redirect('/index.html');
 });
 
+//Use our public folder for static files
 app.use(express.static('public'));
 
+//Spin up our application on port 3000 and connect to mongoDb
 app.listen(3000, function() {
   console.log("Connecting to Mongo...");
   MongoClient.connect(mongo_url, function(err, db) {
