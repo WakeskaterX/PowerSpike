@@ -35,6 +35,15 @@ You can view hosted version at:
 http://www.powerspike.xyz/
 
 Some Cool champs to see differences on from item changes:
+<<<<<<< HEAD
 Ahri
 Kayle (low data but went from early spike to mid game kills)
 Xerath
+=======
+
+* Ahri
+
+* Kayle (low data but went from early spike to mid game kills)
+
+* Xerath
+>>>>>>> Small readme update
