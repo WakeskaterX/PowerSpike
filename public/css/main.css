@@ -1,3 +1,7 @@
+body {
+  background-size: contain;
+}
+
 footer {
   position: relative;
   bottom: 0;
@@ -19,6 +23,16 @@ span#champ_name {
   text-align: center;
 }
 
+.white_border {
+  text-shadow: 2px 2px 2px white, -2px -2px 2px white, -2px 2px 2px white, 2px -2px 2px white;
+}
+
+.white_background {
+  border-radius: 8px 8px 0 0;
+  background-color: white;
+  padding: 12px;
+} 
+
 #chart_title {
   display: block;
   width: 100%;
@@ -33,6 +47,22 @@ span#champ_name {
 
 ul {
   list-style-type: none;
+}
+
+#canvas_holder {
+  text-align: center;
+  width: 100%;
+  background-color: white;
+}
+
+canvas {
+  margin: auto;
+}
+
+#chart_legend {
+  background-color: white;
+  border-radius: 0 0 8px 8px;
+  padding-bottom: 2em;
 }
 
 .line-legend span {

@@ -11,7 +11,7 @@
   <script src="/js/chart_handler.js"></script>
 </head>
 <body>
-  <h1 class="text-center">League of Legends - PowerSpike</h1>
+  <h1 class="text-center white_border">League of Legends - PowerSpike</h1>
   <div class="container">
     <div id="search-bar" class="input-group col-md-8 col-xs-12 col-md-offset-2">
       <input id="search" type="text" class="search-query form-control" placeholder="Enter a Champion Name" />
@@ -21,10 +21,10 @@
         </button>
       </span>
     </div>
-    <div class="col-md-8 col-md-offset-2 col-xs-12">
-      <span id="champ_name"></span><br>
-      <span id="chart_title">Average Kills in each minute over the course of a Game</span>
-      <canvas id="champion_results" width="800" height="400"></canvas>
+    <div class="col-md-10 col-md-offset-1 col-xs-12">
+      <span id="champ_name" class="white_border"></span><br>
+      <span id="chart_title" class="white_background">Average Kills in each minute over the course of a Game</span>
+      <div id="canvas_holder"><canvas id="champion_results" width="800" height="400"></canvas></div>
       <div id="chart_legend"></div>
     </div>
   </div>
@@ -37,6 +37,7 @@
         url: "/champion/"+champ_name,
         success: function(data, status, xhr) {
           console.log(data);
+          updateBackground(JSON.parse(data));
           DRAW_LIB.drawChart(JSON.parse(data));
         }
       })
@@ -52,6 +53,16 @@
         }
       });
     });
+
+    //Updates our background
+    function updateBackground(data){
+      var base_loc = "http://ddragon.leagueoflegends.com/cdn/img/champion/splash/";
+      var champ_image = data.name.replace(" ", "")+"_0.jpg";
+      var image = base_loc + champ_image;
+      var back = new Image(); 
+      back.src = image; 
+      document.body.background= back.src; 
+    }
   </script>
   <footer>PowerSpike isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.</footer>
 </body>

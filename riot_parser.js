@@ -127,6 +127,14 @@ function getMatchData(match_id, collection, main_callback) {
     //First get our player_mapping so we can attribute kills to specific champions
     var player_map = {}; // {participantId: championId}
     var champion_ids = [];
+
+    //Error Checking
+    if (!participants || !participants.length) {
+        console.log("The match id: "+match_id+" had Bad Data!  Skipping!");
+        main_callback();
+        return;
+    }
+
     for (var i = 0; i < participants.length; i++) {
       var p = participants[i];
       player_map[p.participantId.toString()] = p.championId.toString();
