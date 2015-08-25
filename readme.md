@@ -33,3 +33,8 @@ You can then access the page at localhost:3000/index.html and start searching!
 You can view hosted version at:
 
 http://www.powerspike.xyz/
+
+Some Cool champs to see differences on from item changes:
+Ahri
+Kayle (low data but went from early spike to mid game kills)
+Xerath
