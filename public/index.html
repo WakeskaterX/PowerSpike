@@ -29,6 +29,7 @@
     </div>
   </div>
   <script>
+    var CURRENT_CHAMP_DATA = {};
     //Submits the request to the server and then draws the chart with the data
     function submitRequest() {
       var champ_name = $("#search-bar input").val();
@@ -36,9 +37,10 @@
       $.ajax({
         url: "/champion/"+champ_name,
         success: function(data, status, xhr) {
+          CURRENT_CHAMP_DATA = JSON.parse(data);
           console.log(data);
-          updateBackground(JSON.parse(data));
-          DRAW_LIB.drawChart(JSON.parse(data));
+          updateBackground(CURRENT_CHAMP_DATA);
+          DRAW_LIB.drawChart(CURRENT_CHAMP_DATA);
         }
       })
       

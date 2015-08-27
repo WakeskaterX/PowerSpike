@@ -1,5 +1,5 @@
 var line_chart;
-
+var active_data = [true,true,true,true];
 //Draw Library Global Namespace
 var DRAW_LIB = {
   /**
@@ -7,6 +7,8 @@ var DRAW_LIB = {
    * @param {object} champ_data - all of our data from the server
    */
   drawChart: function(champ_data) {
+    //Reset our active data on new champ
+    active_data = [true,true,true,true];
     //if we have a line chart already, destroy it so we can redraw
     if (line_chart) line_chart.destroy();
 
@@ -19,7 +21,7 @@ var DRAW_LIB = {
     $("#champ_name").text(champ_data.name+", "+champ_data.title);
     //Set up our datasets and labels
     var label_array = [];
-    var dataset_array = DRAW_LIB.createDatasetArray(champ_data.kill_data);
+    var dataset_array = DRAW_LIB.createDatasetArray(champ_data.kill_data, active_data);
     for (var i = 0; i < 60; i++) {
       label_array.push(i.toString());
     }
@@ -39,6 +41,18 @@ var DRAW_LIB = {
     line_chart = new Chart(ctx).Line(data, options);
     //Set the inner HTML of the chart_legend to our legend
     document.getElementById("chart_legend").innerHTML = line_chart.generateLegend();
+    $('#chart_legend ul li').each(function(index) {
+      $(this).find("span").click(function() {
+        if ($(this).hasClass("invis_chart")) {
+          $(this).removeClass("invis_chart");
+          active_data[index] = true;
+        } else {
+          $(this).addClass("invis_chart");
+          active_data[index] = false;
+        }
+        DRAW_LIB.reDrawChart(CURRENT_CHAMP_DATA);
+      });
+    });
   },
   /**
    * Create Dataset Array
@@ -80,9 +94,48 @@ var DRAW_LIB = {
       dataset_item.strokeColor = patch_info[i].color;
       dataset_item.pointColor = patch_info[i].color;
 
+      //If it's not active leave out data
+     if (!active_data[i]) {
+        dataset_item.data = [];
+      }
+
       //Push the data to our return array
       ds.push(dataset_item);
     }
     return ds;
+  },
+
+  reDrawChart: function(champ_data){
+    //COPY PASTE - bad form but this is a last minute change to give the chart some nice toggle options
+    //if we have a line chart already, destroy it so we can redraw
+    if (line_chart) line_chart.destroy();
+
+    //set up our canvas and get it ready for drawing
+    var canvas = document.getElementById("champion_results");
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    //Update our champion name header
+    $("#champ_name").text(champ_data.name+", "+champ_data.title);
+    //Set up our datasets and labels
+    var label_array = [];
+    var dataset_array = DRAW_LIB.createDatasetArray(champ_data.kill_data, active_data);
+    for (var i = 0; i < 60; i++) {
+      label_array.push(i.toString());
+    }
+    label_array.push("60+");
+
+    //Update our data object for the chart
+    var data = {
+      labels: label_array,
+      datasets: dataset_array
+    };
+    //Chart options
+    var options = {
+      datasetFill: false,
+      scaleGridLineWidth: 1
+    };
+    //Create our chart
+    line_chart = new Chart(ctx).Line(data, options);
   }
 }

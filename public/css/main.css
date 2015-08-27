@@ -76,3 +76,7 @@ canvas {
   border-radius: 2px;
   margin-right: 1em;
 }
+
+.invis_chart[style] {
+  background-color: transparent !important;
+}
