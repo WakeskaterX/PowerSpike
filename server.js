@@ -8,6 +8,12 @@ var async = require('async');
 var mongo_url = "mongodb://localhost:27017/champion_data";
 var MongoClient = require('mongodb').MongoClient;
 var async = require('async');
+var request = require('request');
+var api_key = "API_KEY_HERE";
+
+var static_champion_endpoint = "https://na.api.pvp.net/api/lol/static-data/na/v1.2/champion?api_key="+api_key;
+
+var all_champion_data = {};
 
 var app = express();
 var mongo_db;
@@ -25,8 +31,14 @@ app.get('/champion/:name', function(req, res) {
     id: 0,
     kill_data: {}
   };
+  var new_name = getValidChampionName(champ_name);
+  var name_regex;
   //Case insensitive Regex so we can get better match results
-  var name_regex = new RegExp(champ_name, "i");
+  if (new_name) {
+    name_regex = new RegExp('^'+new_name+'$', "i");
+  } else {
+    name_regex = new RegExp("^"+champ_name, "i");
+  }
   //In Parallel, we're going to query mongodb in all 4 collections for our champion name
   //When we find that champion, check if this is the first one we found and update the results_object
   //Then once all 4 parallel processes complete, we'll have our games_played and kills object on paired ot each key name
@@ -98,11 +110,42 @@ app.use(express.static('public'));
 
 //Spin up our application on port 3000 and connect to mongoDb
 app.listen(3000, function() {
-  console.log("Connecting to Mongo...");
-  MongoClient.connect(mongo_url, function(err, db) {
-    if (err) console.log(err);
-    else console.log("Connected to MongoDB!");
-    mongo_db = db;
-    console.log("Web Server started!  Listening on port 3000...");
-  });
+  request(static_champion_endpoint, function(err, response, body) {
+    if (response.statusCode == 200) {
+      console.log("Saving all champion data");
+      all_champion_data = JSON.parse(body).data;
+    } else {
+      console.log("Could not get all champion data!  Recieved response code: "+JSON.stringify(response));
+    }
+    console.log("Connecting to Mongo...");
+    MongoClient.connect(mongo_url, function(err, db) {
+      if (err) console.log(err);
+      else console.log("Connected to MongoDB!");
+      mongo_db = db;
+      console.log("Web Server started!  Listening on port 3000...");
+    });
+  })
 });
+
+/**
+ * getValidChampionName takes the query, and searches for a valid champion from
+ * all our champion data and returns a valid champion to use for the mongo query
+ * @param {string} search_query
+ * @returns {string}
+ */
+function getValidChampionName(search_query) {
+  var exact_regex = new RegExp('^'+search_query+"$", "i");
+  var search_regex = new RegExp('^'+search_query, 'i');
+  for (var key in all_champion_data) {
+    if (all_champion_data[key].name.match(exact_regex)) {
+      return all_champion_data[key].name;
+    }
+  }
+  for (var key in all_champion_data) {
+    if (all_champion_data[key].name.match(search_regex)) {
+      return all_champion_data[key].name;
+    }
+  }
+  //Default to our search query
+  return null;
+}
