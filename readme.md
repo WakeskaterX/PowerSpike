@@ -41,3 +41,6 @@ Some Cool champs to see differences on from item changes:
 * Kayle (low data but went from early spike to mid game kills)
 
 * Xerath
+
+**Note**:
+You can toggle the data sets by clicking the colored boxes in the legend.  If it's too cluttered turn some off to get a better comparison!
