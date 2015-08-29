@@ -59,7 +59,7 @@
     //Updates our background
     function updateBackground(data){
       var base_loc = "http://ddragon.leagueoflegends.com/cdn/img/champion/splash/";
-      var champ_image = data.name.replace(" ", "")+"_0.jpg";
+      var champ_image = data.key+"_0.jpg";
       var image = base_loc + champ_image;
       var back = new Image(); 
       back.src = image; 

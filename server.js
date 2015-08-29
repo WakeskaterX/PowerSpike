@@ -31,13 +31,15 @@ app.get('/champion/:name', function(req, res) {
     id: 0,
     kill_data: {}
   };
-  var new_name = getValidChampionName(champ_name);
+  var found_champ = getValidChampionName(champ_name);
   var name_regex;
   //Case insensitive Regex so we can get better match results
-  if (new_name) {
-    name_regex = new RegExp('^'+new_name+'$', "i");
+  if (found_champ) {
+    results_object.key = found_champ.key;
+    name_regex = new RegExp('^'+found_champ.name+'$', "i");
   } else {
-    name_regex = new RegExp("^"+champ_name, "i");
+    res.status(404).send("NOT FOUND");
+    return;
   }
   //In Parallel, we're going to query mongodb in all 4 collections for our champion name
   //When we find that champion, check if this is the first one we found and update the results_object
