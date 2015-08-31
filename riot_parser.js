@@ -129,9 +129,11 @@ function getMatchData(match_id, collection, main_callback) {
     var champion_ids = [];
 
     //Error Checking
-    if (!participants || !participants.length) {
-        console.log("The match id: "+match_id+" had Bad Data!  Skipping!");
-        main_callback();
+    if (response.statusCode != 200) {
+        console.log("We're blocked for match ID: "+match_id+"!  Waiting a good bit (20s) and trying agin");
+        setTimeout(function(){
+          getMatchData(match_id, collection, main_callback)
+        },20000);
         return;
     }
 
